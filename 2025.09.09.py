@@ -10,9 +10,15 @@ class CameraOpen:
             print('failed to open camera')
             exit()
 
+    def gaussian_blur(self, src):
+        gaussian_src = cv2.GaussianBlur(src, (0, 0), sigmaX=2, sigmaY=2)
+        return gaussian_src
+
     def main(self):
         _, src = self.cap.read()
+        gaussian_src = self.gaussian_blur(src)
         cv2.imshow('src', src)
+        cv2.imshow('gaussian_blur', gaussian_src)
 
 if __name__ == '__main__':
     node = CameraOpen()
