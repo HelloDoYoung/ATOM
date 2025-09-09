@@ -17,9 +17,13 @@ class CameraOpen:
     def redHsvInRange(self, src):
         red_lower_bound = np.array([0, 150, 150], dtype=np.uint8)
         red_upper_bound = np.array([20, 255, 255], dtype=np.uint8)
+        red_lower_bound2 = np.array([160, 150, 150], dtype=np.uint8)
+        red_upper_bound2 = np.array([179, 255, 255], dtype=np.uint8)
         hsv_src = cv2.cvtColor(src, cv2.COLOR_BGR2HSV)
         hsv_dst = cv2.inRange(hsv_src, red_lower_bound, red_upper_bound)
-        return hsv_dst
+        hsv_dst2 = cv2.inRange(hsv_src, red_lower_bound2, red_upper_bound2)
+        hsv_dst3 = hsv_dst | hsv_dst2
+        return hsv_dst3
 
     def main(self):
         _, src = self.cap.read()
