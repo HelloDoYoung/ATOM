@@ -25,13 +25,21 @@ class CameraOpen:
         hsv_dst3 = hsv_dst | hsv_dst2
         return hsv_dst3
 
+    def componentsWithStatsFilter(self, src):
+        min_area = 500
+        num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(src, connectivity=8)
+        valid_labels = np.where(stats[1:, cv2.CC_STAT_AREA] >= min_area)[0] + 1
+        mask = np.isin(labels, valid_labels)
+        filtered = (mask * 255).astype(np.uint8)
+        return filtered
+
     def main(self):
         _, src = self.cap.read()
-        gaussian_src = self.gaussian_blur(src)
-        hsv_red_src = self.redHsvInRange(gaussian_src)
+        src2 = self.gaussian_blur(src)
+        src2 = self.redHsvInRange(src2)
+        src2 = self.componentsWithStatsFilter(src2)
         cv2.imshow('src', src)
-        cv2.imshow('gaussian_blur', gaussian_src)
-        cv2.imshow('hsv_red_src', hsv_red_src)
+        cv2.imshow('src2', src2)
 
 if __name__ == '__main__':
     node = CameraOpen()
