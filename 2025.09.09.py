@@ -33,11 +33,25 @@ class CameraOpen:
         filtered = (mask * 255).astype(np.uint8)
         return filtered
 
+    def findRedMoments(self, src):
+        centers = []
+        contours, _ = cv2.findContours(src, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        for contour in contours:
+            if cv2.contourArea(contour) < 2000: continue
+            m = cv2.moments(contour)
+            cx = int(m['m10'] / m['m00'])
+            cy = int(m['m01'] / m['m00'])
+            centers.append((cx, cy))
+        return centers
+
     def main(self):
         _, src = self.cap.read()
         src2 = self.gaussian_blur(src)
         src2 = self.redHsvInRange(src2)
         src2 = self.componentsWithStatsFilter(src2)
+        moments = self.findRedMoments(src2)
+        for m in moments:
+            cv2.circle(src, m, 5, (255, 100, 100), -1)
         cv2.imshow('src', src)
         cv2.imshow('src2', src2)
 
